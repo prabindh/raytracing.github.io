@@ -23,7 +23,8 @@
 #include "texture.h"
 
 #include <iostream>
-
+#include <fstream>
+#include <string>
 
 color ray_color(const ray& r, const color& background, const hittable& world, int depth) {
     hit_record rec;
@@ -373,6 +374,12 @@ int main() {
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
+    // Write to file
+    static std::ofstream ppmfile("output-nextweek.ppm");
+    ppmfile << "P3\n" << std::to_string(image_width) << "\n" << std::to_string(image_height) << "\n";
+    ppmfile << "255\n"; //maxval
+
+
     for (int j = image_height-1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i) {
@@ -383,7 +390,7 @@ int main() {
                 ray r = cam.get_ray(u, v);
                 pixel_color += ray_color(r, background, world, max_depth);
             }
-            write_color(std::cout, pixel_color, samples_per_pixel);
+            write_color(ppmfile, pixel_color, samples_per_pixel);
         }
     }
 
